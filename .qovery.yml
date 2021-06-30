@@ -1,7 +1,7 @@
 ---
 application:
   name: "s-shop-project-backend"
-  project: "S-shop-project"
+  project: "S-project"
   organization: "QoveryCommunity"
 routers:
 - name: "main-s-shop-project-backend"
