@@ -1,0 +1,22 @@
+{
+  "name": "s-shop-project-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chiensitendo/S-shop-project-backend.git"
+  },
+  "author": "TRAN MINH SANG",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chiensitendo/S-shop-project-backend/issues"
+  },
+  "homepage": "https://github.com/chiensitendo/S-shop-project-backend#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
