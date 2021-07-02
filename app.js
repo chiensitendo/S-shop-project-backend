@@ -3,12 +3,50 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors');
+var cookieParser = require('cookie-parser');
+const { promisifyAll } = require('bluebird');
+
+const redis = require("redis");
+
 const mongoose = require('mongoose');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+const { getProvinceList } = require('./services/master-services');
+const Redis = require('./models/Redis');
 
 var app = express();
+
+promisifyAll(redis);
+
+const redisClient = redis.createClient({
+  host: 'redis-10794.c275.us-east-1-4.ec2.cloud.redislabs.com',
+  port: 10794,
+  password: 'nMmAI8dGg45CyLOga0LsEi8dduhwzqKW'
+});
+
+redisClient.on("error", function(error) {
+  console.error(error);
+});
+
+redisClient.on("ready", function(error) {
+  console.error("Redis Cache is ready!");
+});
+
+
+
+var corsOptions = {
+  origin: ['http://localhost:3000', 'http://localhost:3000/'],
+  methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
+  preflightContinue: true,
+  optionsSuccessStatus: 200
+}
+
+
+app.options('*', cors(corsOptions));
+app.use(cors(corsOptions));
+app.use(cookieParser());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -45,9 +83,17 @@ mongoose.connection.on('error', (err) => {
     console.log(`Mongoose connection error: ${err}`);
     process.exit(1);
 });
-mongoose.connection.once('open', () => {
+mongoose.connection.once('open', (err, resp) => {
     console.log("Mongo Database is connected!");
+    getProvinceList().then(res => {
+    redisClient.setAsync("provinces", JSON.stringify(res));
+    console.log("Cache: Provinces List: Fetched!")  
+    }).catch(err => console.log(err));
 });
 
 module.exports = mongoose.connection;
+module.exports = new Redis(redisClient); 
+
 module.exports = app;
+
+
