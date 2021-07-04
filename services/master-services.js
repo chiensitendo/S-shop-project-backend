@@ -130,7 +130,7 @@ async function getTimer(id) {
         Timer.find({id: id},function(err, objs) {
             if (err || !objs || objs.length === 0){
                 let e = error;
-                e.message = err.message;
+                e.message = "Database Error";
                 e.code = STATUS_CODES.INTERNAL_SERVER_ERROR;
                 reject(e);
             } else {
