@@ -7,6 +7,7 @@ function setDefaultHeader(res) {
 
 function convertUserSchemaToUserObject(schema) {
     let user = {};
+    user._id = schema._id;
     user.id = schema.id;
     user.name = schema.name;
     user.createdDate = schema.createdDate;
