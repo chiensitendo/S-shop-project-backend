@@ -13,11 +13,8 @@ const mongoose = require('mongoose');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-<<<<<<< HEAD
 var mastersRouter = require('./routes/masters');
-=======
 var usersCustomer = require('./routes/customer');
->>>>>>> e3a70fb143e83afe60c40c1fc7f58802445351fa
 const { getProvinceList } = require('./services/master-services');
 const Redis = require('./models/Redis');
 
