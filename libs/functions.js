@@ -123,6 +123,30 @@ function validateIdInCollection(obj, collecttion, fieldName, res, next) {
     }
     return isValid;
 }
+function validateInCollection(obj, collecttion, fieldName, res, next) {
+    let isValid = true;
+    if (collecttion && collecttion instanceof Array){
+        let findItem  = collecttion.find(val => {
+            return val === obj[fieldName];
+        });
+        if (!findItem){
+            let err = error;
+            err.message = [NOT_AVAILABLE_TEXT].join().replace('$field', fieldName);
+            err.code = STATUS_CODES.BAD_REQUEST;
+            res.status(STATUS_CODES.BAD_REQUEST);
+            res.json(err);
+            isValid = false;
+        }
+    } else {
+        let err = error;
+        err.message = [NOT_AVAILABLE_TEXT].join().replace('$field', fieldName);
+        err.code = STATUS_CODES.BAD_REQUEST;
+        res.status(STATUS_CODES.BAD_REQUEST);
+        res.json(err);
+        isValid = false;
+    }
+    return isValid;
+}
 const ultility = {
     requiredValidator: requiredValidator,
     setDefaultHeader: setDefaultHeader,
@@ -130,6 +154,8 @@ const ultility = {
     passwordValidator: passwordValidator,
     emailValidator: emailValidator,
     numberValidatorList: numberValidatorList,
-    validateIdInCollection: validateIdInCollection
+    numberValidator: numberValidator,
+    validateIdInCollection: validateIdInCollection,
+    validateInCollection: validateInCollection
 }
 module.exports = ultility;

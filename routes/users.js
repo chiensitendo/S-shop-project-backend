@@ -1,5 +1,4 @@
 var express = require('express');
-const setDefaultHeader = require('../libs/functions');
 const {STATUS_CODES} = require('../libs/const');
 const {insertUser, getUserList} = require('../services/user-services');
 const validator = require('../libs/validators');
@@ -62,7 +61,7 @@ async function loadData(req, res, next) {
   next();
 }
 
-/* */
+/* Register users */
 router.post("/",loadData, function (req, res, next) {
   ultility.setDefaultHeader(res);
   let isValid = validator.validateRegisterUserRequest(req, res, next);

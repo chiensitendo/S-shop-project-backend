@@ -13,6 +13,7 @@ const mongoose = require('mongoose');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var mastersRouter = require('./routes/masters');
 const { getProvinceList } = require('./services/master-services');
 const Redis = require('./models/Redis');
 
@@ -37,7 +38,10 @@ redisClient.on("ready", function(error) {
 
 
 var corsOptions = {
-  origin: ['http://localhost:3000', 'http://localhost:3000/'],
+  origin: ['http://localhost:3000', 
+  'http://localhost:3000/', 
+  'https://s-shop-front-end-project.vercel.app/',
+  'https://s-shop.vercel.app/'],
   methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
   preflightContinue: true,
   optionsSuccessStatus: 200
@@ -60,6 +64,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/masters', mastersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
