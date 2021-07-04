@@ -7,7 +7,12 @@
   GET  /api/users
   ## Tạo user
   POST /api/users
-  ### Request
+### Request
     {
         "name": "Name of User
     }
+## Lấy danh sách Customers
+  GET  /api/customers
+  ## Tạo user
+  POST /api/customers/add
+  

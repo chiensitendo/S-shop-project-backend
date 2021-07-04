@@ -13,6 +13,7 @@ const mongoose = require('mongoose');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var usersCustomer = require('./routes/customer');
 const { getProvinceList } = require('./services/master-services');
 const Redis = require('./models/Redis');
 
@@ -60,6 +61,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/customers', usersCustomer);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -90,6 +92,10 @@ mongoose.connection.once('open', (err, resp) => {
     console.log("Cache: Provinces List: Fetched!")  
     }).catch(err => console.log(err));
 });
+
+// app.listen(3000,()=>{
+//   console.log('đã bật server');
+// })
 
 module.exports = mongoose.connection;
 module.exports = new Redis(redisClient); 
