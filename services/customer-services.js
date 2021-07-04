@@ -114,10 +114,10 @@ async function insertCustomer(params) {
                                 e.code = STATUS_CODES.INTERNAL_SERVER_ERROR;
                                 reject(e);
                             } else {
-                                console.log('User successfully saved.');
+                                console.log('Customer successfully saved.');
                                 let res = response;
                                 res.code = STATUS_CODES.OK;
-                                res.message = 'Tạo user thành công!';
+                                res.message = 'Tạo customer thành công!';
                                 resolve(res);
                             }
                         });
@@ -128,8 +128,54 @@ async function insertCustomer(params) {
     })
 }
 
+async function deleteOneCustomer(param) {
+    return new Promise((resolve, reject) => {
+        setTimeout(()=> {
+            let e = error;
+            e.message = "Timeout";
+            e.code = STATUS_CODES.INTERNAL_SERVER_ERROR;
+             reject(e);   
+        }, TIMEOUT_RESPONSE);
+            const Customer = mongoose.connection.model('Customers', CustomerSchema);
+            //console.log([param.id]);
+            var id =param.id;
+            
+            Customer.find( {id:id},(err,data)=>{
+                if (err||data[0] == undefined){
+                    if(data[0] == undefined){
+                        var err = "dữ liệu này đã bị xóa";
+                    }
+                    console.log(err);
+                    let e = error;
+                    e.message = err.message;
+                    e.code = STATUS_CODES.INTERNAL_SERVER_ERROR;
+                    reject(e);
+                } else {
+                        //console.log({data:data[0]});
+                        Customer.findByIdAndDelete({_id:data[0]._id},(err)=>{
+                            if (err){
+                                console.log(err);
+                                let e = error;
+                                e.message = err.message;
+                                e.code = STATUS_CODES.INTERNAL_SERVER_ERROR;
+                                reject(e);
+                            } else {
+                                console.log('Customer successfully delete.');
+                                const res = response;
+                                res.code = STATUS_CODES.OK;
+                                res.message = 'xóa customer thành công!';
+                                resolve(res);
+                            }
+                        });
+                    
+                }
+            });
+
+    })
+}
 
 module.exports = {
-    insertCustomer: insertCustomer,
-    getCustomerList: getCustomerList
+    insertCustomer      : insertCustomer,
+    getCustomerList     : getCustomerList,
+    deleteOneCustomer   : deleteOneCustomer
 };

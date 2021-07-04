@@ -1,7 +1,7 @@
 var express = require('express');
 const setDefaultHeader = require('../libs/functions');
 const {STATUS_CODES} = require('../libs/const');
-const {insertCustomer,getCustomerList} = require('../services/customer-services');
+const {insertCustomer,getCustomerList, deleteOneCustomer} = require('../services/customer-services');
 const validator = require('../libs/validators');
 const ultility = require('../libs/functions');
 const Redis = require('../models/Redis');
@@ -38,7 +38,7 @@ router.get('/', loadCustomer, function(req, res, next) {
     res.json(req.CustomerList);
 });
 
-/* POST users. */
+/* POST customers. */
 router.post("/add", function (req, res, next) {
     ultility.setDefaultHeader(res);
     // dùng chung validator với user
@@ -51,7 +51,18 @@ router.post("/add", function (req, res, next) {
       res.json(!err.message ? "Server Error": err.message);
     });
 });
-
+/* get customers. */
+router.post("/dell", function (req, res) {
+  ultility.setDefaultHeader(res);
+  // res.send(req.body.id);
+  deleteOneCustomer(req.body).then((r) => {
+    res.status(STATUS_CODES.OK);
+    res.json(r);
+  }).catch(err => {
+    res.status(!err.code? STATUS_CODES.INTERNAL_SERVER_ERROR: err.code);
+    res.json(!err.message ? "Server Error": err.message);
+  });
+});
 
 async function loadData(req, res, next) {
   let cache = new Redis();
