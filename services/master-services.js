@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
-const { STATUS_CODES, TIMEOUT_RESPONSE } = require('../libs/const');
+const { STATUS_CODES, TIMEOUT_RESPONSE, DATETIME_FULL_FORMAT } = require('../libs/const');
 var Schema = mongoose.Schema;
 const error = require("../libs/error.json");
 const response = require("../libs/response.json");
 const { TimerSchema } = require('../schemas/timer');
+const moment = require('moment');
 
 var WardSchema = new Schema({
     id: {
@@ -140,7 +141,7 @@ async function getTimer(id) {
         });
     });    
 }
-async function saveTimerSchema(req, res, next) {
+async function createTimer(req, res, next) {
     return new Promise((resolve, reject) => {
         setTimeout(()=> {
             let e = error;
@@ -148,8 +149,12 @@ async function saveTimerSchema(req, res, next) {
             e.code = STATUS_CODES.INTERNAL_SERVER_ERROR;
              reject(e);   
         }, TIMEOUT_RESPONSE);
-        req.timer[req.body['type']] = req.body['value'];
-        req.timer.save(function(err) {
+        const Timer = mongoose.connection.model('Timer', TimerSchema);
+        let timer = new Timer({
+            id: req.params['id'],
+            time: new Date()
+        });
+        timer.save(function(err) {
             if (err){
                 let e = error;
                 e.message = err.message;
@@ -158,7 +163,7 @@ async function saveTimerSchema(req, res, next) {
             } else {
                 let r = response;
                 r.code = STATUS_CODES.OK;
-                r.message = 'Save time thành công!';
+                r.message = 'Tạo timer thành công!';
                 resolve(r);
             }
         });
@@ -168,5 +173,5 @@ async function saveTimerSchema(req, res, next) {
 module.exports = {
     getProvinceList: getProvinceList,
     getTimer: getTimer,
-    saveTimerSchema: saveTimerSchema
+    createTimer: createTimer
 };

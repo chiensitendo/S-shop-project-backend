@@ -11,6 +11,7 @@ EMAIL_VALIDATOR_TEXT = "Email không đúng định dạng.";
 NUMBER_VALIDATOR_TEXT = "Trường '$field' phải là dạng số";
 NOT_AVAILABLE_TEXT = "'$field' không tồn tại";
 
+DATETIME_FULL_FORMAT = "YYYY-MM-DD HH:mm:ss";
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "access-token-secret-sang-s-full-aytec-goalist-bi.com-@";
 module.exports = {
@@ -21,5 +22,6 @@ module.exports = {
     EMAIL_VALIDATOR_TEXT: EMAIL_VALIDATOR_TEXT,
     NUMBER_VALIDATOR_TEXT: NUMBER_VALIDATOR_TEXT,
     NOT_AVAILABLE_TEXT: NOT_AVAILABLE_TEXT,
-    ACCESS_TOKEN_SECRET: ACCESS_TOKEN_SECRET
+    ACCESS_TOKEN_SECRET: ACCESS_TOKEN_SECRET,
+    DATETIME_FULL_FORMAT: DATETIME_FULL_FORMAT
 };

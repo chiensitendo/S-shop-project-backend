@@ -148,6 +148,17 @@ function validateInCollection(obj, collecttion, fieldName, res, next) {
     }
     return isValid;
 }
+
+function getNumberString (number) {
+    if (number === undefined || number === null) {
+        return '';
+    }
+    if (number < 10){
+        return `0${number}`;
+    } else {
+       return number + '';
+    }
+}
 const ultility = {
     requiredValidator: requiredValidator,
     setDefaultHeader: setDefaultHeader,
@@ -157,6 +168,7 @@ const ultility = {
     numberValidatorList: numberValidatorList,
     numberValidator: numberValidator,
     validateIdInCollection: validateIdInCollection,
-    validateInCollection: validateInCollection
+    validateInCollection: validateInCollection,
+    getNumberString: getNumberString
 }
 module.exports = ultility;

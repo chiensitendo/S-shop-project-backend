@@ -6,22 +6,10 @@ var TimerSchema = new Schema({
         type: Number,
         required: "Yêu cầu trường id"
     },
-    seconds: {
-        type: String,
-        default: "00"
+    time: {
+        type: Date,
+        default: new Date()
     },
-    minutes: {
-        type: String,
-        default: "00"
-    },
-    hours: {
-        type: String,
-        default: "00"
-    },
-    days: {
-        type: String,
-        default: "0"
-    }
 });
 
 module.exports = {
