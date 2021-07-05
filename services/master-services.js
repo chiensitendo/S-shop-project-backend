@@ -5,6 +5,7 @@ const error = require("../libs/error.json");
 const response = require("../libs/response.json");
 const { TimerSchema } = require('../schemas/timer');
 const moment = require('moment');
+const { VisitSchema } = require('../schemas/visit');
 
 var WardSchema = new Schema({
     id: {
@@ -119,6 +120,29 @@ async function getProvinceList() {
     });
 }
 
+async function getVisit(id) {
+    return new Promise((resolve, reject) => {
+        setTimeout(()=> {
+            let e = error;
+            e.message = "Timeout";
+            e.code = STATUS_CODES.INTERNAL_SERVER_ERROR;
+             reject(e);   
+        }, TIMEOUT_RESPONSE);
+        const Visit = mongoose.connection.model('Visit', VisitSchema);
+        Visit.find({id: id},function(err, objs) {
+            if (err || !objs || objs.length === 0){
+                let e = error;
+                e.message = "Database Error";
+                e.code = STATUS_CODES.INTERNAL_SERVER_ERROR;
+                reject(e);
+            } else {
+                let obj = objs[0];
+                resolve(obj);
+            }
+        });
+    });
+}
+
 async function getTimer(id) {
     return new Promise((resolve, reject) => {
         setTimeout(()=> {
@@ -170,8 +194,39 @@ async function createTimer(req, res, next) {
     });
 }
 
+async function createVisit(req, res, next) {
+    return new Promise((resolve, reject) => {
+        setTimeout(()=> {
+            let e = error;
+            e.message = "Timeout";
+            e.code = STATUS_CODES.INTERNAL_SERVER_ERROR;
+             reject(e);   
+        }, TIMEOUT_RESPONSE);
+        const Vist = mongoose.connection.model('Visit', VisitSchema);
+        let timer = new Vist({
+            id: req.params['id'],
+            times: 0
+        });
+        timer.save(function(err) {
+            if (err){
+                let e = error;
+                e.message = err.message;
+                e.code = STATUS_CODES.INTERNAL_SERVER_ERROR;
+                reject(e);
+            } else {
+                let r = response;
+                r.code = STATUS_CODES.OK;
+                r.message = 'Tạo visit thành công!';
+                resolve(r);
+            }
+        });
+    });
+}
+
 module.exports = {
     getProvinceList: getProvinceList,
     getTimer: getTimer,
-    createTimer: createTimer
+    createTimer: createTimer,
+    createVisit: createVisit,
+    getVisit: getVisit
 };
