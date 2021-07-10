@@ -1,10 +1,10 @@
 var express = require('express');
-const { STATUS_CODES } = require('../libs/const');
+const { STATUS_CODES, DATETIME_FULL_FORMAT } = require('../libs/const');
 const { numberValidator, getNumberString } = require('../libs/functions');
 const { getTimer, createTimer, createVisit, getVisit } = require('../services/master-services');
 var router = express.Router();
 const moment = require('moment');
-
+const IO = require('../models/io');
 async function checkId(req, res, next) {
     let id  = req.params['id'];
     let isValid = numberValidator(id, 'id', res, next);
@@ -64,6 +64,9 @@ router.put('/visit/:id', checkId, function (req, res, next) {
 });
 
 router.get('/visit/:id', function (req, res, next) {
+    let io =  new IO().getIO();
+    // console.log(io.engine.clients);
+    io.sockets.emit("visit", "There is someone visited our system at " + moment().format(DATETIME_FULL_FORMAT));
     let id  = req.params['id'];
     let isValid = numberValidator(id, 'id', res, next);
     if (!isValid) {

@@ -16,9 +16,10 @@ var usersRouter = require('./routes/users');
 var mastersRouter = require('./routes/masters');
 var usersCustomer = require('./routes/customer');
 const { getProvinceList } = require('./services/master-services');
-const Redis = require('./models/Redis');
+const Redis = require('./models/Redis');;
 
 var app = express();
+
 
 promisifyAll(redis);
 
@@ -99,7 +100,7 @@ mongoose.connection.once('open', (err, resp) => {
     console.log("Cache: Provinces List: Fetched!")  
     }).catch(err => console.log(err));
 });
-
+redisClient.setAsync("sockets", JSON.stringify([]));
 
 module.exports = mongoose.connection;
 module.exports = new Redis(redisClient); 

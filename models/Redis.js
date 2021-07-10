@@ -1,15 +1,15 @@
 const { getProvinceList } = require("../services/master-services");
 
-var client = null;
+var redisClient = null;
 class Redis {
      
     constructor(c){
         if (c)
-        client = c;
+        redisClient = c;
     }
 
     get(){
-        return client;
+        return redisClient;
     }
     async setProvinceList(){
         getProvinceList().then(res => {
@@ -17,7 +17,17 @@ class Redis {
           }).catch(err => console.log(err));
     }
     async getProvinceList(){
-        return client.getAsync("provinces");
+        return redisClient.getAsync("provinces");
+    }
+    async getSocketPoolling(){
+        return redisClient.getAsync("sockets");
+    }
+    async setSetSocket(id){
+        getSocketPoolling().then(res => {
+            let newRes = res;
+            newRes.push(id);
+            redisClient.setAsync("sockets", JSON.stringify(newRes));
+          }).catch(err => console.log(err));
     }
 }
 
