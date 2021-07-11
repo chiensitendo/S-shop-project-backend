@@ -5,6 +5,7 @@ const { getTimer, createTimer, createVisit, getVisit } = require('../services/ma
 var router = express.Router();
 const moment = require('moment');
 const IO = require('../models/io');
+const { isAuth } = require('../libs/auth');
 async function checkId(req, res, next) {
     let id  = req.params['id'];
     let isValid = numberValidator(id, 'id', res, next);

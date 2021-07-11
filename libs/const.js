@@ -3,6 +3,7 @@ const STATUS_CODES = {
     INTERNAL_SERVER_ERROR: 500,
     BAD_REQUEST: 401,
     NOT_FOUND: 400,
+    UNAUTHORIZED: 403
 }
 TIMEOUT_RESPONSE = 5000;
 REQUIRED_VALIDATOR_TEXT = "Thiếu trường '$field' và trường này không được null hoặc rỗng.";
@@ -13,7 +14,13 @@ NOT_AVAILABLE_TEXT = "'$field' không tồn tại";
 
 DATETIME_FULL_FORMAT = "YYYY-MM-DD HH:mm:ss";
 
-const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "access-token-secret-sang-s-full-aytec-goalist-bi.com-@";
+const ACCESS_TOKEN_LIFE = process.env.ACCESS_TOKEN_LIFE || "1h";
+
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "@-esh-soche-sang-secret-uth-iub-";
+
+const REFRESH_TOKEN_LIFE = process.env.REFRESH_TOKEN_LIFE || "3650d";
+
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || "@-ref-eshp-uht-iht-iub-sang--";
 module.exports = {
     TIMEOUT_RESPONSE: TIMEOUT_RESPONSE,
     STATUS_CODES: STATUS_CODES,
@@ -23,5 +30,9 @@ module.exports = {
     NUMBER_VALIDATOR_TEXT: NUMBER_VALIDATOR_TEXT,
     NOT_AVAILABLE_TEXT: NOT_AVAILABLE_TEXT,
     ACCESS_TOKEN_SECRET: ACCESS_TOKEN_SECRET,
-    DATETIME_FULL_FORMAT: DATETIME_FULL_FORMAT
+    DATETIME_FULL_FORMAT: DATETIME_FULL_FORMAT,
+    ACCESS_TOKEN_LIFE: ACCESS_TOKEN_LIFE,
+    REFRESH_TOKEN_LIFE: REFRESH_TOKEN_LIFE,
+    REFRESH_TOKEN_SECRET: REFRESH_TOKEN_SECRET
+
 };

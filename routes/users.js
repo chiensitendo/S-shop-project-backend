@@ -1,10 +1,14 @@
 var express = require('express');
-const {STATUS_CODES} = require('../libs/const');
-const {insertUser, getUserList} = require('../services/user-services');
+const {STATUS_CODES, ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE, REFRESH_TOKEN_SECRET, REFRESH_TOKEN_LIFE} = require('../libs/const');
+const {insertUser, getUserList, getUser} = require('../services/user-services');
 const validator = require('../libs/validators');
 const ultility = require('../libs/functions');
 const Redis = require('../models/Redis');
+const bcrypt = require('bcrypt');
+const error = require("../libs/error.json");
+const jwtUltility = require('../libs/jwtUltility');
 var router = express.Router();
+
 
 
 async function loadUsers(req, res, next) {
@@ -60,6 +64,49 @@ async function loadData(req, res, next) {
   }).catch(err => console.log("Không tìm thấy dữ liệu", err));
   next();
 }
+
+router.post("/login", function (req, res, next) {
+    ultility.setDefaultHeader(res);
+    let isValid = ultility.requiredValidator(req.body, "loginId", res, next);
+    isValid = isValid && ultility.requiredValidator(req.body, "password", res, next);
+    if (isValid){
+      getUser(req.body['loginId']).then(user => {
+        bcrypt.compare(req.body['password'], user.password).then(isVal => {
+            if (isVal){
+                let userToken = {
+                  _id: user.id,
+                  username: user.username,
+                  email: user.email
+                }
+                let accessTokenASync = jwtUltility.generateToken(userToken, ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE);
+                let refreshTokenASync = jwtUltility.generateToken(userToken, REFRESH_TOKEN_SECRET, REFRESH_TOKEN_LIFE);
+                Promise.all([accessTokenASync, refreshTokenASync]).then((tokens) => {
+                  user.refreshToken = tokens[1];
+                  user.save();
+                  res.status(STATUS_CODES.OK);
+                  res.json({
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    accessToken: tokens[0],
+                    refreshToken: tokens[1]
+                  });
+                });
+            } else {
+              let e = error;
+              e.message = "Mật khẩu không đúng!";
+              e.code = STATUS_CODES.BAD_REQUEST;
+              res.status(STATUS_CODES.BAD_REQUEST);
+              res.json(e);
+            }
+        }).catch(er => console.log(er));
+      }).catch(err => {
+        res.status(!err.code? STATUS_CODES.INTERNAL_SERVER_ERROR: err.code);
+        res.json(!err.message ? "Server Error": err);
+      })
+    };
+    
+});
 
 /* Register users */
 router.post("/",loadData, function (req, res, next) {
