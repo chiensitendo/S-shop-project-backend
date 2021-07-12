@@ -1,12 +1,15 @@
 var express = require('express');
 const {STATUS_CODES, ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE, REFRESH_TOKEN_SECRET, REFRESH_TOKEN_LIFE} = require('../libs/const');
-const {insertUser, getUserList, getUser} = require('../services/user-services');
+const {insertUser, getUserList, getUser, searchUserByLoginId} = require('../services/user-services');
 const validator = require('../libs/validators');
 const ultility = require('../libs/functions');
 const Redis = require('../models/Redis');
 const bcrypt = require('bcrypt');
 const error = require("../libs/error.json");
 const jwtUltility = require('../libs/jwtUltility');
+const { isAuth } = require('../libs/auth');
+const { requiredValidator, numberValidator } = require('../libs/functions');
+const { createToken } = require('../libs/bcryptUltility');
 var router = express.Router();
 
 
@@ -41,6 +44,51 @@ router.get('/', loadUsers, function(req, res, next) {
     res.json(req.userList);
 });
 
+router.post('/:id/refresh', function(req, res, next) {
+    let id  = req.params['id'];
+    let isValid = numberValidator(id, 'id', res, next);
+    isValid = isValid && requiredValidator(req.body, "refreshToken", res, next);
+    let refreshToken = req.body['refreshToken'];
+    if (!isValid) {
+        next();
+    } else {
+      getUser(id).then(user => {
+        if (!user.refreshToken){
+          res.status(STATUS_CODES.TOKEN_NOT_FOUND);
+          res.json({
+            code: STATUS_CODES.TOKEN_NOT_FOUND,
+            message: "Không thấy refresh token."
+          });
+        } else {
+          if (refreshToken === user.refreshToken){
+            createToken(user, req, res, next).then(token => {
+              user.refreshToken = token.refreshToken;
+              user.save();
+              res.json({
+                accessToken: token.accessToken,
+                refreshToken: token.refreshToken
+              });
+            }).catch(err => {
+              next();
+            })
+          } else {
+            res.status(STATUS_CODES.UNAUTHORIZED);
+            res.json({
+              code: STATUS_CODES.UNAUTHORIZED,
+              message: "Không xác thực."
+            })
+          }
+        }
+      }).catch(err => {
+        res.status(!err.code? STATUS_CODES.INTERNAL_SERVER_ERROR: err.code);
+        res.json(!err.message ? {
+          code: STATUS_CODES.INTERNAL_SERVER_ERROR,
+          message: "Server Error"
+        }: err);
+      });
+    }
+});
+
 /* POST users. */
 router.post("/add", function (req, res, next) {
     ultility.setDefaultHeader(res);
@@ -50,7 +98,10 @@ router.post("/add", function (req, res, next) {
       res.json(r);
     }).catch(err => {
       res.status(!err.code? STATUS_CODES.INTERNAL_SERVER_ERROR: err.code);
-      res.json(!err.message ? "Server Error": err.message);
+      res.json(!err.message ? {
+        code: STATUS_CODES.INTERNAL_SERVER_ERROR,
+        message: "Server Error"
+      }: err);
     });
 });
 
@@ -64,34 +115,28 @@ async function loadData(req, res, next) {
   }).catch(err => console.log("Không tìm thấy dữ liệu", err));
   next();
 }
-
+/** Login user */
 router.post("/login", function (req, res, next) {
     ultility.setDefaultHeader(res);
     let isValid = ultility.requiredValidator(req.body, "loginId", res, next);
     isValid = isValid && ultility.requiredValidator(req.body, "password", res, next);
     if (isValid){
-      getUser(req.body['loginId']).then(user => {
+      searchUserByLoginId(req.body['loginId']).then(user => {
         bcrypt.compare(req.body['password'], user.password).then(isVal => {
             if (isVal){
-                let userToken = {
-                  _id: user.id,
+              createToken(user, req, res, next).then(token => {
+                user.refreshToken = token.refreshToken;
+                user.save();
+                res.json({
+                  id: user.id,
                   username: user.username,
-                  email: user.email
-                }
-                let accessTokenASync = jwtUltility.generateToken(userToken, ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE);
-                let refreshTokenASync = jwtUltility.generateToken(userToken, REFRESH_TOKEN_SECRET, REFRESH_TOKEN_LIFE);
-                Promise.all([accessTokenASync, refreshTokenASync]).then((tokens) => {
-                  user.refreshToken = tokens[1];
-                  user.save();
-                  res.status(STATUS_CODES.OK);
-                  res.json({
-                    id: user.id,
-                    username: user.username,
-                    email: user.email,
-                    accessToken: tokens[0],
-                    refreshToken: tokens[1]
-                  });
+                  email: user.email,
+                  accessToken: token.accessToken,
+                  refreshToken: token.refreshToken
                 });
+              }).catch(err => {
+                next();
+              })
             } else {
               let e = error;
               e.message = "Mật khẩu không đúng!";
@@ -102,7 +147,10 @@ router.post("/login", function (req, res, next) {
         }).catch(er => console.log(er));
       }).catch(err => {
         res.status(!err.code? STATUS_CODES.INTERNAL_SERVER_ERROR: err.code);
-        res.json(!err.message ? "Server Error": err);
+        res.json(!err.message ? {
+          code: STATUS_CODES.INTERNAL_SERVER_ERROR,
+          message: "Server Error"
+        }: err);
       })
     };
     
@@ -118,7 +166,10 @@ router.post("/",loadData, function (req, res, next) {
       res.json(r);
     }).catch(err => {
       res.status(!err.code? STATUS_CODES.INTERNAL_SERVER_ERROR: err.code);
-      res.json(!err.message ? "Server Error": err);
+      res.json(!err.message ? {
+        code: STATUS_CODES.INTERNAL_SERVER_ERROR,
+        message: "Server Error"
+      }: err);
     });
   }
 })

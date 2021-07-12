@@ -3,7 +3,8 @@ const STATUS_CODES = {
     INTERNAL_SERVER_ERROR: 500,
     BAD_REQUEST: 401,
     NOT_FOUND: 400,
-    UNAUTHORIZED: 403
+    UNAUTHORIZED: 403,
+    TOKEN_NOT_FOUND: 405
 }
 TIMEOUT_RESPONSE = 5000;
 REQUIRED_VALIDATOR_TEXT = "Thiếu trường '$field' và trường này không được null hoặc rỗng.";

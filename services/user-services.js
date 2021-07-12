@@ -75,7 +75,7 @@ async function getUserList() {
     });
 }
 
-async function getUser(loginIn) {
+async function getUser(id) {
     return new Promise((resolve, reject) => {
         setTimeout(()=> {
             let e = error;
@@ -84,7 +84,32 @@ async function getUser(loginIn) {
              reject(e);   
         }, TIMEOUT_RESPONSE);
         const User = mongoose.connection.model('User', UserSchema);
-        User.find( { $or:[ {'email': loginIn}, {'username': loginIn} ]}, 
+        User.find( { $or:[ {'id': id}]}, 
+        function(err,docs){
+            if(!err){
+                if (!docs || docs.length === 0){
+                    let e = error;
+                    e.message = "username hoặc email không tồn tại!";
+                    e.code = STATUS_CODES.BAD_REQUEST;
+                    reject(e);                           
+                } else {
+                    resolve(docs[0]);
+                }
+            }
+        });
+    });
+}
+
+async function searchUserByLoginId(loginId) {
+    return new Promise((resolve, reject) => {
+        setTimeout(()=> {
+            let e = error;
+            e.message = "Timeout";
+            e.code = STATUS_CODES.INTERNAL_SERVER_ERROR;
+             reject(e);   
+        }, TIMEOUT_RESPONSE);
+        const User = mongoose.connection.model('User', UserSchema);
+        User.find( { $or:[ {'email': loginId}, {'username': loginId} ]}, 
         function(err,docs){
             if(!err){
                 if (!docs || docs.length === 0){
@@ -161,5 +186,6 @@ async function insertUser(params) {
 module.exports = {
     insertUser: insertUser,
     getUserList: getUserList,
+    searchUserByLoginId: searchUserByLoginId,
     getUser: getUser
 };
