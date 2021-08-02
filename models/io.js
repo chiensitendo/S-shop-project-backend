@@ -12,6 +12,7 @@ class IO {
                   'http://localhost:3000/', 
                   'https://s-shop-front-end-project.vercel.app',
                   'https://s-shop.vercel.app',
+                  'https://so-cheap.vercel.app',
                   'https://s-shop-front-end-project-iwj01i5ot-chiensitendo1.vercel.app'
                 ],
                   methods: ["GET", "POST"]
