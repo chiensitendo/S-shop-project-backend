@@ -44,7 +44,10 @@ async function insertSubscribe(email, name) {
                                     let res = response;
                                     res.code = STATUS_CODES.OK;
                                     res.message = 'Đăng ký thành công!';
-                                    resolve(res);
+                                    resolve({
+                                        res: res,
+                                        subcribe: subcribe
+                                    });
                                 }
                             });
                     }
