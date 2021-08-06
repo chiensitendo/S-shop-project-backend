@@ -15,6 +15,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var mastersRouter = require('./routes/masters');
 var usersCustomer = require('./routes/customer');
+var subscribeRouter =  require("./routes/subscribe");
 const { getProvinceList } = require('./services/master-services');
 const Redis = require('./models/Redis');;
 
@@ -71,7 +72,7 @@ app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/masters', mastersRouter);
 app.use('/api/customers', usersCustomer);
-
+app.use('/api/subscribe', subscribeRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
