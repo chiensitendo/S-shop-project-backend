@@ -7,10 +7,8 @@ async function sendMail(name, email){
         // secure: false, // true for 465, false for other ports
         service: "Gmail",
         auth: {
-          user: "s.socheap247@gmail.com", // generated ethereal user
-          pass: "Sang123456", // generated ethereal password
-          // user: process.env.SEND_EMAIL, // generated ethereal user
-          // pass: process.env.SEND_EMAIL_PASSWORD, // generated ethereal password
+          user: process.env.SEND_EMAIL, // generated ethereal user
+          pass: process.env.SEND_EMAIL_PASSWORD, // generated ethereal password
         },
       });
       let info = await transporter.sendMail({
@@ -38,10 +36,8 @@ async function sendMailToMe(name, email){
       // secure: false, // true for 465, false for other ports
       service: "Gmail",
       auth: {
-        user: "s.socheap247@gmail.com", // generated ethereal user
-        pass: "Sang123456", // generated ethereal password
-        // user: process.env.SEND_EMAIL, // generated ethereal user
-        // pass: process.env.SEND_EMAIL_PASSWORD, // generated ethereal password
+        user: process.env.SEND_EMAIL, // generated ethereal user
+        pass: process.env.SEND_EMAIL_PASSWORD, // generated ethereal password
       },
     });
     let info = await transporter.sendMail({
