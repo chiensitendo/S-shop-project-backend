@@ -1,17 +1,30 @@
 var express = require('express');
 const { STATUS_CODES, DATETIME_FULL_FORMAT } = require('../libs/const');
 const { numberValidator, getNumberString } = require('../libs/functions');
-const { getTimer, createTimer, createVisit, getVisit } = require('../services/master-services');
+const { getTimer, createTimer, createVisit, getVisit, createBlogCategories } = require('../services/master-services');
 var router = express.Router();
 const moment = require('moment');
 const IO = require('../models/io');
 const { isAuth } = require('../libs/auth');
+const Redis = require('../models/Redis');
+const ultility = require('../libs/functions');
+
 async function checkId(req, res, next) {
     let id  = req.params['id'];
     let isValid = numberValidator(id, 'id', res, next);
     req.isValid = isValid;
     next();
 }
+
+async function loadData(req, res, next) {
+    let cache = new Redis();
+    req.provinces = [];
+    await cache.getProvinceList().then(res => {
+      let provinces = JSON.parse(res);
+      req.provinces = provinces;
+    }).catch(err => console.log("Không tìm thấy dữ liệu", err));
+    next();
+  }
 
 router.post('/timer/:id', checkId, function (req, res, next) {
     if (req.isValid) {
@@ -108,6 +121,22 @@ router.get('/timer/:id', function (req, res, next) {
             res.json(!err.message ? "Server Error": err);
         });
     }
+});
+
+router.post('/blog/categories', function (req, res, next) {
+    createBlogCategories(req, res, next).then(r => {
+            res.status(r.code);
+            res.json(r);
+        }).catch(err => {
+            res.status(!err.code? STATUS_CODES.INTERNAL_SERVER_ERROR: err.code);
+            res.json(!err.message ? "Server Error": err);
+        });
+});
+
+router.get('/provinces', loadData, function (req, res, next) {
+    ultility.setDefaultHeader(res);
+    res.status(STATUS_CODES.OK);
+    res.json(req.provinces);
 });
 
 module.exports = router;

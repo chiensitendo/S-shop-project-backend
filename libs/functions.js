@@ -39,8 +39,10 @@ function requiredValidatorObject(obj, fieldName, res, next) {
         let err = error;
         err.message = [REQUIRED_VALIDATOR_TEXT].join().replace('$field', fieldName);
         err.code = STATUS_CODES.BAD_REQUEST;
-        res.status(STATUS_CODES.BAD_REQUEST);
-        res.json(err);
+        if (res){
+            res.status(STATUS_CODES.BAD_REQUEST);
+            res.json(err);
+        }
         isValid = false;
     }
     return isValid;
@@ -51,8 +53,10 @@ function passwordValidator(obj, fieldName, res, next) {
         let err = error;
         err.message = PASSWORD_VALIDATOR_TEXT;
         err.code = STATUS_CODES.BAD_REQUEST;
-        res.status(STATUS_CODES.BAD_REQUEST);
-        res.json(err);
+        if (res){
+            res.status(STATUS_CODES.BAD_REQUEST);
+            res.json(err);
+        }
         isValid = false;
     }
     return isValid;
@@ -80,8 +84,10 @@ function numberValidator(obj, fieldName, res, next) {
         let err = error;
         err.message = [NUMBER_VALIDATOR_TEXT].join().replace('$field', fieldName);
         err.code = STATUS_CODES.BAD_REQUEST;
-        res.status(STATUS_CODES.BAD_REQUEST);
-        res.json(err);
+        if (res){
+            res.status(STATUS_CODES.BAD_REQUEST);
+            res.json(err);
+        }
         isValid = false;
     }
     return isValid; 
@@ -93,8 +99,10 @@ function emailValidator(obj, fieldName, res, next) {
         let err = error;
         err.message = EMAIL_VALIDATOR_TEXT;
         err.code = STATUS_CODES.BAD_REQUEST;
-        res.status(STATUS_CODES.BAD_REQUEST);
-        res.json(err);
+        if (res){
+            res.status(STATUS_CODES.BAD_REQUEST);
+            res.json(err);
+        }
         isValid = false;
     }
     return isValid;

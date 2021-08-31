@@ -18,7 +18,7 @@ class IO {
                   methods: ["GET", "POST"]
                 }
                });
-            
+
             ioInstance.on('connection', (socket) => {
                 console.log('a user connected');
                 if (socket.handshake.query['id']){
@@ -38,9 +38,18 @@ class IO {
 
           
     }
-
     getIO(){
         return ioInstance;
+    }
+
+    getSocketById(id){
+      if (!id){
+        return null;
+      }
+      if (!ioInstance || !ioInstance.sockets || !ioInstance.sockets.sockets){
+        return null;
+      }
+      return ioInstance.sockets.sockets.get(id);
     }
     
 }

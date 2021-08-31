@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
-const { STATUS_CODES, TIMEOUT_RESPONSE, DATETIME_FULL_FORMAT } = require('../libs/const');
+const { STATUS_CODES, TIMEOUT_RESPONSE } = require('../libs/const');
 var Schema = mongoose.Schema;
 const error = require("../libs/error.json");
 const response = require("../libs/response.json");
 const { TimerSchema } = require('../schemas/timer');
 const moment = require('moment');
 const { VisitSchema } = require('../schemas/visit');
+const { BlogCategoriesSchema } = require('../schemas/blog-category');
 
 var WardSchema = new Schema({
     id: {
@@ -223,10 +224,41 @@ async function createVisit(req, res, next) {
     });
 }
 
+async function createBlogCategories(req, res, next) {
+    return new Promise((resolve, reject) => {
+        setTimeout(()=> {
+            let e = error;
+            e.message = "Timeout";
+            e.code = STATUS_CODES.INTERNAL_SERVER_ERROR;
+             reject(e);   
+        }, TIMEOUT_RESPONSE);
+        const BlogCategories = mongoose.connection.model('BlogCategories', BlogCategoriesSchema);
+        BlogCategories.insertMany([
+            { id: 1, name: "Travel"},
+            { id: 2, name: "Food"},
+            { id: 3, name: "Bussiness"},
+            { id: 4, name: "News"},
+            { id: 5, name: "IT"},
+            { id: 6, name: "Feeling"}
+        ]).then(function(){
+            let r = response;
+            r.code = STATUS_CODES.OK;
+            r.message = 'Tạo dữ liệu blog categories thành công!';
+            resolve(r);
+        }).catch(function(error){
+            let e = error;
+            e.message = err.message;
+            e.code = STATUS_CODES.INTERNAL_SERVER_ERROR;
+            reject(e);
+        });
+    });
+}
+
 module.exports = {
     getProvinceList: getProvinceList,
     getTimer: getTimer,
     createTimer: createTimer,
     createVisit: createVisit,
-    getVisit: getVisit
+    getVisit: getVisit,
+    createBlogCategories: createBlogCategories
 };

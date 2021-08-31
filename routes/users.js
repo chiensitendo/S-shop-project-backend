@@ -1,15 +1,17 @@
 var express = require('express');
-const {STATUS_CODES, ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE, REFRESH_TOKEN_SECRET, REFRESH_TOKEN_LIFE} = require('../libs/const');
-const {insertUser, getUserList, getUser, searchUserByLoginId} = require('../services/user-services');
+const {STATUS_CODES} = require('../libs/const');
+const {insertUser, getUserList, getUser, searchUserByLoginId, updateUser} = require('../services/user-services');
 const validator = require('../libs/validators');
 const ultility = require('../libs/functions');
 const Redis = require('../models/Redis');
 const bcrypt = require('bcrypt');
 const error = require("../libs/error.json");
 const jwtUltility = require('../libs/jwtUltility');
-const { isAuth } = require('../libs/auth');
+const { isAuth, isVerifiedToken } = require('../libs/auth');
 const { requiredValidator, numberValidator } = require('../libs/functions');
 const { createToken } = require('../libs/bcryptUltility');
+const SendMailEvents = require('../handlers/send-mail');
+const LogRecorder = require('../handlers/log-recorder');
 var router = express.Router();
 
 
@@ -161,9 +163,12 @@ router.post("/",loadData, function (req, res, next) {
   ultility.setDefaultHeader(res);
   let isValid = validator.validateRegisterUserRequest(req, res, next);
   if (isValid){
-    insertUser(req.body).then((r) => {
+    insertUser(req.body).then((user) => {
+      LogRecorder.emit("reg-com-log", user.id);
+      SendMailEvents.emit("reg-welcome-mail", user);
+      SendMailEvents.emit("reg-verify-mail", user);
       res.status(STATUS_CODES.OK);
-      res.json(r);
+      res.json(user.id);
     }).catch(err => {
       res.status(!err.code? STATUS_CODES.INTERNAL_SERVER_ERROR: err.code);
       res.json(!err.message ? {
@@ -172,7 +177,48 @@ router.post("/",loadData, function (req, res, next) {
       }: err);
     });
   }
-})
+});
+
+router.post("/verify", function (req, res, next) {
+  ultility.setDefaultHeader(res);
+  let isValid = ultility.requiredValidator(req.body, "id", res, next);
+  isValid = isValid && ultility.requiredValidator(req.body, "verifyToken", res, next);
+  if (isValid){
+    const {id, verifyToken} = req.body;
+    getUser(id).then(user => {
+      if (user.isVerified){
+        res.status(STATUS_CODES.BAD_REQUEST).send({
+          code: STATUS_CODES.BAD_REQUEST,
+          message: "Token hết hiệu lực!",
+        });
+        return;
+      }
+      isVerifiedToken(id, verifyToken).then(r => {
+        if (r.isVerified) {
+          user.isVerified = true;
+          updateUser(user).then(e => {
+            res.status(STATUS_CODES.OK).send({
+              isVerified: true
+            });
+          }).catch(err => {
+            throw err;
+          })
+        } else {
+          res.status(STATUS_CODES.BAD_REQUEST).send({
+            code: STATUS_CODES.BAD_REQUEST,
+            message: r.message,
+          });
+        }
+      }).catch (err => {throw err});
+    }).catch(err => {
+      res.status(!err.code? STATUS_CODES.INTERNAL_SERVER_ERROR: err.code);
+      res.json(!err.message ? {
+        code: STATUS_CODES.INTERNAL_SERVER_ERROR,
+        message: "Server Error"
+      }: err);
+    })
+  }
+});
 
 
 module.exports = router;

@@ -91,6 +91,3 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
-function getSocket() {
-  return io;
-}

@@ -4,7 +4,22 @@ const STATUS_CODES = {
     BAD_REQUEST: 401,
     NOT_FOUND: 400,
     UNAUTHORIZED: 403,
-    TOKEN_NOT_FOUND: 405
+    TOKEN_NOT_FOUND: 405,
+    NOT_VERIFIED: 406
+}
+const ROLES = {
+    ADMIN: 0,
+    CUSTOMER: 1
+}
+const ACCOUNT_TYPE = {
+    NORMAL: 3,
+    GOOGLE: 1,
+    FACEBOOK: 2
+}
+const LOG_TYPE = {
+    REGISTER: 1,
+    ERROR: 100,
+    LOGIN: 2
 }
 TIMEOUT_RESPONSE = 5000;
 REQUIRED_VALIDATOR_TEXT = "Thiếu trường '$field' và trường này không được null hoặc rỗng.";
@@ -17,11 +32,25 @@ DATETIME_FULL_FORMAT = "YYYY-MM-DD HH:mm:ss";
 
 const ACCESS_TOKEN_LIFE = process.env.ACCESS_TOKEN_LIFE || "1h";
 
+const ACCESS_TOKEN_LIFE_N = process.env.ACCESS_TOKEN_LIFE_N || 1;
+
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "@-esh-soche-sang-secret-uth-iub-";
 
 const REFRESH_TOKEN_LIFE = process.env.REFRESH_TOKEN_LIFE || "3650d";
 
+const VERIFY_TOKEN_LIFE = process.env.REFRESH_TOKEN_LIFE || "30d";
+
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || "@-ref-eshp-uht-iht-iub-sang--";
+
+const VERIFY_TOKEN_SECRET = process.env.VERIFY_TOKEN_SECRET || "@-firyve-eshp-uht-iht-iub-sang--";
+
+const FRONT_END_URL = process.env.FRONT_END_URL || "http://localhost:3000";
+
+const SEND_EMAIL = process.env.SEND_EMAIL || "s.socheap247@gmail.com";
+
+const SEND_EMAIL_PASSWORD = process.env.SEND_EMAIL_PASSWORD || "Sang123456";
+
+
 module.exports = {
     TIMEOUT_RESPONSE: TIMEOUT_RESPONSE,
     STATUS_CODES: STATUS_CODES,
@@ -34,6 +63,14 @@ module.exports = {
     DATETIME_FULL_FORMAT: DATETIME_FULL_FORMAT,
     ACCESS_TOKEN_LIFE: ACCESS_TOKEN_LIFE,
     REFRESH_TOKEN_LIFE: REFRESH_TOKEN_LIFE,
-    REFRESH_TOKEN_SECRET: REFRESH_TOKEN_SECRET
-
+    REFRESH_TOKEN_SECRET: REFRESH_TOKEN_SECRET,
+    ROLES: ROLES,
+    ACCOUNT_TYPE: ACCOUNT_TYPE,
+    LOG_TYPE: LOG_TYPE,
+    VERIFY_TOKEN_SECRET: VERIFY_TOKEN_SECRET,
+    VERIFY_TOKEN_LIFE: VERIFY_TOKEN_LIFE,
+    FRONT_END_URL: FRONT_END_URL,
+    SEND_EMAIL: SEND_EMAIL,
+    SEND_EMAIL_PASSWORD: SEND_EMAIL_PASSWORD,
+    ACCESS_TOKEN_LIFE_N: ACCESS_TOKEN_LIFE_N
 };

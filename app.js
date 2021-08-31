@@ -6,6 +6,9 @@ var logger = require('morgan');
 var cors = require('cors');
 var cookieParser = require('cookie-parser');
 const { promisifyAll } = require('bluebird');
+const passport = require('passport');
+// const { session } = require('passport');
+const session = require('express-session');
 
 const redis = require("redis");
 
@@ -16,6 +19,7 @@ var usersRouter = require('./routes/users');
 var mastersRouter = require('./routes/masters');
 var usersCustomer = require('./routes/customer');
 var subscribeRouter =  require("./routes/subscribe");
+var googleOauthRouter = require("./routes/oauth/google");
 const { getProvinceList } = require('./services/master-services');
 const Redis = require('./models/Redis');;
 
@@ -56,7 +60,6 @@ var corsOptions = {
 
 app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
-app.use(cookieParser());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -73,6 +76,7 @@ app.use('/api/users', usersRouter);
 app.use('/api/masters', mastersRouter);
 app.use('/api/customers', usersCustomer);
 app.use('/api/subscribe', subscribeRouter);
+app.use('/google', googleOauthRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
